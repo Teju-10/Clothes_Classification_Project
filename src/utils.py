@@ -4,9 +4,11 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 def load_data(train_dir, val_dir, test_dir):
     train_gen = ImageDataGenerator(
         rescale=1./255,
-        rotation_range=20,
-        zoom_range=0.2,
-        horizontal_flip=True
+        rotation_range=30,
+        zoom_range=0.3,
+        horizontal_flip=True,
+        shear_range=0.2,
+        brightness_range=[0.7, 1.3]
     )
 
     val_gen = ImageDataGenerator(rescale=1./255)
@@ -43,7 +45,12 @@ def build_model(num_classes):
         weights='imagenet'
     )
 
-    base_model.trainable = False
+    # 🔥 Fine-tuning enabled
+    base_model.trainable = True
+
+    # Freeze most layers
+    for layer in base_model.layers[:-30]:
+        layer.trainable = False
 
     model = tf.keras.Sequential([
         base_model,
@@ -54,7 +61,7 @@ def build_model(num_classes):
     ])
 
     model.compile(
-        optimizer='adam',
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
         loss='categorical_crossentropy',
         metrics=['accuracy']
     )
