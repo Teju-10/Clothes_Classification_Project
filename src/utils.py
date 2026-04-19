@@ -45,7 +45,7 @@ def build_model(num_classes):
         weights='imagenet'
     )
 
-    # 🔥 Fine-tuning enabled
+    #  Fine-tuning 
     base_model.trainable = True
 
     # Freeze most layers
